@@ -10,7 +10,6 @@ ADMIN_ID = 6855926140
 
 logging.basicConfig(level=logging.INFO)
 
-# Запрещённые контакты
 CONTACT_PATTERN = re.compile(
     r'(\+?\d[\d\-\s]{7,}\d)|'
     r'(@\w{4,})|'
@@ -25,7 +24,6 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text
     user = update.message.from_user
 
-    # Проверка на контакты
     if CONTACT_PATTERN.search(text):
         await update.message.reply_text(
             "❌ Нельзя указывать контакты (телефон, Instagram, Telegram, Facebook и т.д.).\n"
@@ -33,13 +31,9 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         return
 
-    # Публикуем анонимно в канал
     await context.bot.send_message(chat_id=CHANNEL_ID, text=text)
-
-    # Отвечаем пользователю
     await update.message.reply_text("✅ Объявление опубликовано в канале!")
 
-    # Пишем вам лично кто отправил
     username = f"@{user.username}" if user.username else "нет username"
     admin_text = (
         f"📩 Новое объявление\n\n"
@@ -52,7 +46,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 def main():
     app = Application.builder().token(BOT_TOKEN).build()
-    app.add_handler(MessageHandler(filters.TEXT & (\~filters.COMMAND), handle_message))
+    app.add_handler(MessageHandler(filters.TEXT & filters.ChatType.PRIVATE, handle_message))
     print("Бот запущен...")
     app.run_polling()
 
