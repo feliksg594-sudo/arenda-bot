@@ -16,7 +16,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 def main():
     app = Application.builder().token(BOT_TOKEN).build()
-    app.add_handler(MessageHandler(filters.TEXT & \~filters.COMMAND, handle_message))
+    app.add_handler(MessageHandler(filters.TEXT & (~filters.COMMAND), handle_message))
     print("Бот запущен...")
     app.run_polling()
 
